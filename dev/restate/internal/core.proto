@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package dev.restate.internal.core;
+
+option java_package = "dev.restate.generated.internal.core";
+option go_package = "restate.dev/sdk-go/pb/internal/core";
+
+message Failure {
+  int32 code = 1;
+  string message = 2;
+}
