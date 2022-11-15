@@ -40,7 +40,7 @@ message SupportedVersionRangeMessage {
 
 // Type: 0x0000 + 3
 message SuspensionMessage {
-  repeated int32 entry_indexes = 1;
+  repeated int32 entry_indices = 1;
 }
 
 // --- Journal Entries ---

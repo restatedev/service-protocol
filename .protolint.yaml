@@ -5,7 +5,7 @@ lint:
 
   rules_option:
     max_line_length:
-      max_chars: 120
+      max_chars: 180
       tab_chars: 2
 
     indent:
