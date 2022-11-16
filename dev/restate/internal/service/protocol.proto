@@ -59,11 +59,7 @@ message SuspensionMessage {
 // Kind: Completable JournalEntry
 // Type: 0x0400 + 0
 message PollInputStreamEntryMessage {
-  oneof result {
-    google.protobuf.Empty empty = 13;
-    bytes value = 14;
-    core.Failure failure = 15;
-  };
+  bytes value = 14;
 }
 
 // Kind: Ack-able JournalEntry
