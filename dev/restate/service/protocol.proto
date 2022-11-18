@@ -1,12 +1,11 @@
 syntax = "proto3";
 
-package dev.restate.internal.service.protocol;
+package dev.restate.service.protocol;
 
-import "dev/restate/internal/core.proto";
 import "google/protobuf/empty.proto";
 
-option java_package = "dev.restate.generated.internal.service.protocol";
-option go_package = "restate.dev/sdk-go/pb/internal/service/protocol";
+option java_package = "dev.restate.generated.service.protocol";
+option go_package = "restate.dev/sdk-go/pb/service/protocol";
 
 // --- Core frames ---
 
@@ -28,7 +27,7 @@ message CompletionMessage {
   oneof result {
     google.protobuf.Empty empty = 13;
     bytes value = 14;
-    core.Failure failure = 15;
+    Failure failure = 15;
   };
 }
 
@@ -50,7 +49,7 @@ message SuspensionMessage {
 //
 //   * google.protobuf.Empty empty = 13 for cases when we need to propagate to user code the distinction between default value or no value.
 //   * bytes value = 14 for carrying the result value
-//   * core.Failure failure = 15 for carrying a failure
+//   * Failure failure = 15 for carrying a failure
 //
 // The tag numbers 13, 14 and 15 are reserved and shouldn't be used for other fields.
 
@@ -67,7 +66,7 @@ message PollInputStreamEntryMessage {
 message OutputStreamEntryMessage {
   oneof result {
     bytes value = 14;
-    core.Failure failure = 15;
+    Failure failure = 15;
   };
 }
 
@@ -118,7 +117,7 @@ message InvokeEntryMessage {
 
   oneof result {
     bytes value = 14;
-    core.Failure failure = 15;
+    Failure failure = 15;
   };
 }
 
@@ -136,7 +135,7 @@ message BackgroundInvokeEntryMessage {
 message CallbackEntryMessage {
   oneof result {
     bytes value = 14;
-    core.Failure failure = 15;
+    Failure failure = 15;
   };
 }
 
@@ -156,6 +155,13 @@ message CompleteCallbackEntryMessage {
 message SideEffectEntryMessage {
   oneof result {
     bytes value = 14;
-    core.Failure failure = 15;
+    Failure failure = 15;
   };
+}
+
+// --- Nested messages
+
+message Failure {
+  int32 code = 1;
+  string message = 2;
 }
