@@ -150,15 +150,6 @@ message CompleteAwakeableEntryMessage {
   bytes payload = 5;
 }
 
-// Kind: Ack-able JournalEntry
-// Type: 0x0C00 + 5
-message SideEffectEntryMessage {
-  oneof result {
-    bytes value = 14;
-    Failure failure = 15;
-  };
-}
-
 // --- Nested messages
 
 message Failure {
