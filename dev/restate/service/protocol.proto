@@ -35,7 +35,9 @@ message SuspensionMessage {
   // This list represents any of the entry_index the invocation is waiting on to progress.
   // The runtime will resume the invocation as soon as one of the given entry_index is completed.
   // This list MUST not be empty.
-  repeated uint32 entry_indexes = 1;
+  // False positive, entry_indexes is a valid plural of entry_indices.
+  // https://learn.microsoft.com/en-us/style-guide/a-z-word-list-term-collections/i/index-indexes-indices
+  repeated uint32 entry_indexes = 1;  // protolint:disable:this REPEATED_FIELD_NAMES_PLURALIZED
 }
 
 // --- Journal Entries ---
