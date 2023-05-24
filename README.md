@@ -1,3 +1,5 @@
-# Restate Service Protocol specification
+# Restate Service Protocol
 
-<!-- TODO write here protocol specification -->
+This repo contains specification documents and Protobuf schemas of the Restate Service Protocol.
+
+* [Service invocation protocol specification](./service-invocation-protocol.md)
