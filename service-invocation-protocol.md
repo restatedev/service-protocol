@@ -14,8 +14,9 @@ The system is composed of two actors:
 Each service method invocation is modeled by the protocol as a state machine, where state transitions can be caused
 either by user code or by _Runtime events_.
 
-Every state transition is logged in the _Invocation journal_, used to suspend a function and resume an invocation at a
-later point in time. The _Invocation journal_ is tracked both by Restate runtime and service endpoint.
+Every state transition is logged in the _Invocation journal_, used to implement the Restate durable execution model. The
+journal is also used to suspend an invocation and resume it at a later point in time. The _Invocation journal_ is
+tracked both by Restate runtime and service endpoint.
 
 Runtime and service endpoint exchange _Messages_ containing the invocation journal and runtime events through an HTTP
 message stream.
@@ -32,18 +33,19 @@ Most Restate features, such as interaction with other services, accessing servic
 as _Restate syscalls_ and exposed through the service protocol. The user interacts with these syscalls using the SDK
 APIs, which generate _Journal Entry_ messages that will be handled by the invocation state machine.
 
-Depending on the specific syscall, the Restate Runtime generates as response either:
+Depending on the specific syscall, the Restate runtime generates as response either:
 
-- An ack, that is a confirmation the syscall has been persisted and **will** be executed
 - A completion, that is the response to the syscall
+- An ack, that is a confirmation the syscall has been persisted and **will** be executed
+- Nothing
 
-Each syscall defines at priori whether it replies with an ack or a completion.
+Each syscall defines a priori whether it replies with an ack or a completion, or doesn't reply at all.
 
 There are a couple of special message streams for initializing and closing the invocation.
 
 ### Replaying and Processing
 
-Both Runtime and SDKs transition the message stream through 2 states:
+Both runtime and SDKs transition the message stream through 2 states:
 
 - _Replaying_, that is when there are journal entries to replay before continuing the execution. Described in
   [Suspension behavior](#suspension-behavior).
@@ -51,18 +53,18 @@ Both Runtime and SDKs transition the message stream through 2 states:
 
 There are a couple of properties that we enforce through the design of the protocol:
 
-- Runtime and Service endpoint both have their view of the journal
+- Runtime and service endpoint both have their view of the journal
 - The source of truth of the journal is:
-  - The Runtime, when the invocation is not in _processing_ state
-  - The Service endpoint, when the invocation is in _processing_ state
-- When in _replaying_ state, the Service endpoint cannot create new journal entries.
-- When in _processing_ state, only the Service endpoint can create new journal entries, picking their order.
+  - The runtime, when the invocation is not in _processing_ state
+  - The service endpoint, when the invocation is in _processing_ state
+- When in _replaying_ state, the service endpoint cannot create new journal entries.
+- When in _processing_ state, only the service endpoint can create new journal entries, picking their order.
   Consequently, it might have newer entries that the runtime is not aware of. It’s also the responsibility of the
-  Service endpoint to make sure the Runtime has the same ordered view of the journal it has.
+  service endpoint to make sure the runtime has the same ordered view of the journal it has.
 
 ## Messages
 
-The protocol is composed by messages that are sent back and forth between Runtime and Service Endpoint. The protocol
+The protocol is composed by messages that are sent back and forth between runtime and service Endpoint. The protocol
 mandates the following messages:
 
 - `StartMessage`
@@ -72,8 +74,8 @@ mandates the following messages:
 
 ### Message stream
 
-In order to execute a service method invocation, Service endpoint and Restate Runtime open a single stream between the
-Runtime and the Service endpoint. Given 10 concurrent service method invocations to a Service endpoint, there are 10
+In order to execute a service method invocation, service endpoint and restate Runtime open a single stream between the
+runtime and the service endpoint. Given 10 concurrent service method invocations to a service endpoint, there are 10
 concurrent streams, each of them mapping to a specific invocation.
 
 This stream is implemented using HTTP, and depending on the deployment environment and the HTTP version it can operate
@@ -81,9 +83,9 @@ in two modes:
 
 - Full duplex (bidirectional) stream: Messages are sent back and forth on the same stream at the same time. This option
   is supported only when using HTTP/2.
-- Uni-directional (Request/Response) stream: Messages are sent from runtime to service endpoint, and later from service
-  endpoint to runtime. Once the service endpoint starts sending messages to the runtime, the runtime cannot send
-  messages anymore back to the service endpoint.
+- Request/Response stream: Messages are sent from runtime to service endpoint, and later from service endpoint to
+  runtime. Once the service endpoint starts sending messages to the runtime, the runtime cannot send messages anymore
+  back to the service endpoint.
 
 When opening the stream, the request method MUST be `POST` and the request path MUST have the following format:
 
@@ -117,17 +119,17 @@ The message header is a fixed 64-bit number containing:
 <table>
 <thead>
   <tr>
-    <th colspan="16">32 bit</th>
+    <th colspan="32">32 bit</th>
   </tr>
 </thead>
 <tbody>
   <tr>
-    <td colspan="3">Kind</td>
-    <td colspan="5">Type</td>
-    <td colspan="8">Flags</td>
+    <td colspan="6">Kind</td>
+    <td colspan="10">Type</td>
+    <td colspan="16">Flags</td>
   </tr>
   <tr>
-    <td colspan="16">Length</td>
+    <td colspan="32">Length</td>
   </tr>
 </tbody>
 </table>
@@ -150,7 +152,7 @@ The `StartMessage` carries the metadata required to bootstrap the invocation sta
 <tbody>
   <tr>
     <td colspan="16">0x0000</td>
-    <td colspan="4">Reserved</td>
+    <td colspan="5">Reserved</td>
     <td colspan="1">PS</td>
     <td colspan="10">PV</td>
   </tr>
@@ -193,7 +195,7 @@ The protocol allows the SDK to register an arbitrary entry type within the journ
 runtime will treat this entry as any other entry, persisting it and sending it during replay in the correct order.
 
 If the SDK needs an acknowledgment that the entry has been persisted, it can set the `REQUIRES_ACK` flag in the header.
-When set, the Runtime will send back a completion, as described in
+When set, the runtime will send back a completion, as described in
 [Entries and Completions section](#entries-and-completions), as soon as the entry is persisted.
 
 **Header**
@@ -216,7 +218,7 @@ When set, the Runtime will send back a completion, as described in
 </tbody>
 </table>
 
-* Type MUST be `>= 0xFC00`
+- Type MUST be `>= 0xFC00`
 
 **Flags**
 
