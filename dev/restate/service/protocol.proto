@@ -13,6 +13,8 @@ option go_package = "restate.dev/sdk-go/pb/service/protocol";
 message StartMessage {
   message StateEntry {
     bytes key = 1;
+    // If value is an empty byte array,
+    // then it means the value is empty and not "missing" (e.g. empty string).
     bytes value = 2;
   }
 
