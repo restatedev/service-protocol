@@ -1,13 +1,13 @@
 # Restate Service Invocation Protocol
 
-The following specification describes the protocol used by Restate to invoke remote Restate Services.
+The following specification describes the protocol used by Restate to invoke remote Restate services.
 
 ## Architecture
 
-The system is composed by two actors:
+The system is composed of two actors:
 
 - Restate Runtime
-- Service endpoint, which is split in:
+- Service endpoint, which is split into:
   - SDK, which contains the implementation of the Restate Protocol
   - User business logic, which interacts with the SDK to access Restate system calls (or syscalls)
 
@@ -15,9 +15,9 @@ Each service method invocation is modeled by the protocol as a state machine, wh
 either by user code or by _Runtime events_.
 
 Every state transition is logged in the _Invocation journal_, used to suspend a function and resume an invocation at a
-later point in time. The _Invocation journal_ is tracked both by Restate Runtime and Service endpoint.
+later point in time. The _Invocation journal_ is tracked both by Restate runtime and service endpoint.
 
-Runtime and Service endpoint exchange _Messages_ containing the invocation journal and runtime events through an HTTP
+Runtime and service endpoint exchange _Messages_ containing the invocation journal and runtime events through an HTTP
 message stream.
 
 ## State machine and journal
@@ -74,7 +74,7 @@ mandates the following messages:
 
 In order to execute a service method invocation, Service endpoint and Restate Runtime open a single stream between the
 Runtime and the Service endpoint. Given 10 concurrent service method invocations to a Service endpoint, there are 10
-concurrent streams, each of them mapping a specific invocation.
+concurrent streams, each of them mapping to a specific invocation.
 
 This stream is implemented using HTTP, and depending on the deployment environment and the HTTP version it can operate
 in two modes:
