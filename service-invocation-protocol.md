@@ -110,10 +110,10 @@ Each message is sent together with a message header prepending the serialized me
 
 The message header is a fixed 64-bit number containing:
 
-- (MSB) Message kind: 6 bit. Provides namespacing of message types.
-- Message type: 10 bit. The type of the message. Used to deserialize the message.
-- Message reserved bits: 16 bit. These bits can be used by specific message types/message kinds to send flags and other
-  information.
+- (MSB) Message type: 16 bit. The type of the message. Used to deserialize the message. The first 6 bits are used as the
+  message namespace, to categorize the different message types.
+- Message reserved bits: 16 bit. These bits can be used to send flags and other information, and are defined per message
+  type/namespace.
 - Message length: 32 bit. Length of serialized message bytes, excluding header length.
 
 <table>
@@ -124,8 +124,7 @@ The message header is a fixed 64-bit number containing:
 </thead>
 <tbody>
   <tr>
-    <td colspan="6">Kind</td>
-    <td colspan="10">Type</td>
+    <td colspan="16">Type</td>
     <td colspan="16">Flags</td>
   </tr>
   <tr>
@@ -164,7 +163,7 @@ The `StartMessage` carries the metadata required to bootstrap the invocation sta
 
 **Flags**
 
-- 2 bits (MSB): Reserved
+- 5 bits (MSB): Reserved
 - 1 bit `PS`: `PARTIAL_STATE` flag (see [Eager state](#eager-state))
 - 10 bits `PV`: Protocol version
 
