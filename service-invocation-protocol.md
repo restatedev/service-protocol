@@ -14,9 +14,9 @@ The system is composed of two actors:
 Each service method invocation is modeled by the protocol as a state machine, where state transitions can be caused
 either by user code or by _Runtime events_.
 
-Every state transition is logged in the _Invocation journal_, used to implement the Restate durable execution model. The
+Every state transition is logged in the _Invocation journal_, used to implement Restate's durable execution model. The
 journal is also used to suspend an invocation and resume it at a later point in time. The _Invocation journal_ is
-tracked both by Restate runtime and service endpoint.
+tracked both by Restate's runtime and the service endpoint.
 
 Runtime and service endpoint exchange _Messages_ containing the invocation journal and runtime events through an HTTP
 message stream.
