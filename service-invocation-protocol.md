@@ -110,7 +110,12 @@ An arbitrary path MAY prepend the aforementioned path format.
 In case the path format is not respected, or `fullyQualifiedServiceName` or `methodName` is unknown, the SDK MUST close
 the stream replying back with a `404` status code.
 
-A message stream MUST start with `StartMessage` and MUST end with either `OutputStreamEntry` or `SuspensionMessage`.
+A message stream MUST start with `StartMessage` and MUST end with either:
+
+- One `OutputStreamEntry`
+- One [`SuspensionMessage`](#suspension)
+- One [`ErrorMessage`](#failures).
+- None of the above, which is equivalent to sending an empty [`ErrorMessage`](#failures).
 
 ### Message header
 
@@ -226,7 +231,7 @@ also not be interested in the `result` of completable journal entries, or it mig
 different order used to create the related journal entries. Usually it's the service business logic that dictates in
 which `result`s the SDK is interested, and in which order.
 
-**`CompletionMessage` Headers**
+**`CompletionMessage` Header**
 
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -282,14 +287,32 @@ We distinguish between infrastructure failures and user failures:
   logic bugs, etc.
 
 In case of an infrastructure failure, the runtime will take care of retrying to execute the invocation, following a
-defined set of policies. When retrying, the previous stored journal will be reused. To notify an infrastructure failure,
-the SDK closes the stream without `OutputStreamEntry` or `SuspensionMessage`.
+defined set of policies. When retrying, the previous stored journal will be reused.
+
+To notify an infrastructure failure, the SDK can either:
+
+- Close the stream with a `ErrorMessage`.
+- Close the stream without `OutputStreamEntry` or `SuspensionMessage` or `ErrorMessage`. This is equivalent to sending
+  an empty `ErrorMessage`.
+
+When notifying an infrastructure failure, the SDK MUST NOT assume that every journal entry previously sent on the same
+message stream has been correctly stored.
 
 In case of a user failure, the SDK records it in the journal, usually in the `OutputStreamEntry.failure` field. These
-won't be retried.
+won't be retried and will be propagated to the caller.
 
 An SDK implementation MAY expose in the APIs the distinction between infrastructure failure and user failure, to provide
 fine-grained control over what errors should be retried or not.
+
+**`ErrorMessage` Header**
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |             0x0003            |            Reserved           |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                             Length                            |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 ## Optional features
 
