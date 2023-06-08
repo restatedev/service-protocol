@@ -222,8 +222,8 @@ send any additional messages related to this specific entry. On subsequent repla
 `result` field of this entry, without sending a subsequent `CompletionMessage`.
 
 The runtime can send `CompletionMessage` in a different order than the one used to store journal entries. The SDK might
-also not be interested in the `result` of completable journal entries, or it might be interested on the `result`s in a
-different order used to create the related journal entries. Usually it's the service business logic that dictates on
+also not be interested in the `result` of completable journal entries, or it might be interested in the `results` in a
+different order used to create the related journal entries. Usually it's the service business logic that dictates in
 which `result`s the SDK is interested, and in which order.
 
 **`CompletionMessage` Headers**
