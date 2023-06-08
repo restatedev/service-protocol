@@ -116,6 +116,14 @@ A message stream MUST start with `StartMessage` and MUST end with either `Output
 
 Each message is sent together with a message header prepending the serialized message bytes.
 
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |              Type             |            Reserved           |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                             Length                            |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
 The message header is a fixed 64-bit number containing:
 
 - (MSB) Message type: 16 bit. The type of the message. Used to deserialize the message. The first 6 bits are used as the
@@ -123,10 +131,6 @@ The message header is a fixed 64-bit number containing:
 - Message reserved bits: 16 bit. These bits can be used to send flags and other information, and are defined per message
   type/namespace.
 - Message length: 32 bit. Length of serialized message bytes, excluding header length.
-
-  0 1 2 3  
-   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  | Type | Reserved | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ | Length | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 ### StartMessage
 
