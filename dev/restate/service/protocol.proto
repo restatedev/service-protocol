@@ -52,7 +52,17 @@ message SuspensionMessage {
 
 // Type: 0x0000 + 3
 message ErrorMessage {
-  Failure failure = 15;
+  // The code can be:
+  // * Any of the error codes from gRPC, as defined here: https://github.com/grpc/grpc/blob/master/doc/statuscodes.md#status-codes-and-their-use-in-grpc
+  // * JOURNAL_MISMATCH = 17, that is when the SDK cannot replay a journal due to the mismatch between the journal and the actual code.
+  // * PROTOCOL_VIOLATION = 18, that is when the SDK receives an unexpected message or an expected message variant, given its state.
+  //
+  // When code code > 18, code 2 (UNKNOWN) will be used instead.
+  uint32 code = 1;
+  // Contains a concise error message, e.g. Throwable#getMessage() in Java.
+  string message = 2;
+  // Contains a verbose error description, e.g. the exception stacktrace.
+  string description = 3;
 }
 
 // --- Journal Entries ---
@@ -171,8 +181,12 @@ message CompleteAwakeableEntryMessage {
 
 // --- Nested messages
 
+// This failure object carries user visible errors, e.g. failure result of an InvokeEntryMessage.
 message Failure {
-  // Same error space of gRPC, as defined here: https://github.com/grpc/grpc/blob/master/doc/statuscodes.md#status-codes-and-their-use-in-grpc
-  int32 code = 1;
+  // The code should be any of the gRPC error codes,
+  // as defined here: https://github.com/grpc/grpc/blob/master/doc/statuscodes.md#status-codes-and-their-use-in-grpc
+  // When code code > 16, code 2 (UNKNOWN) should be used instead.
+  uint32 code = 1;
+  // Contains a concise error message, e.g. Throwable#getMessage() in Java.
   string message = 2;
 }
