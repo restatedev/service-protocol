@@ -292,9 +292,9 @@ policies. When retrying, the previous stored journal will be reused.
 
 To notify a failure, the SDK can either:
 
-- Close the stream with an `ErrorMessage`.
+- Close the stream with an `ErrorMessage`. This message is used by the runtime for accurate reporting to the user.
 - Close the stream without `OutputStreamEntry` or `SuspensionMessage` or `ErrorMessage`. This is equivalent to sending
-  an empty `ErrorMessage`.
+  an `ErrorMessage` with unknown reason.
 
 When notifying a failure, the SDK MUST NOT assume that every journal entry previously sent on the same message stream
 has been correctly stored.
