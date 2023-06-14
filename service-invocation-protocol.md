@@ -110,7 +110,12 @@ An arbitrary path MAY prepend the aforementioned path format.
 In case the path format is not respected, or `fullyQualifiedServiceName` or `methodName` is unknown, the SDK MUST close
 the stream replying back with a `404` status code.
 
-A message stream MUST start with `StartMessage` and MUST end with either `OutputStreamEntry` or `SuspensionMessage`.
+A message stream MUST start with `StartMessage` and MUST end with either:
+
+- One `OutputStreamEntry`
+- One [`SuspensionMessage`](#suspension)
+- One [`ErrorMessage`](#failures).
+- None of the above, which is equivalent to sending an empty [`ErrorMessage`](#failures).
 
 ### Message header
 
@@ -226,7 +231,7 @@ also not be interested in the `result` of completable journal entries, or it mig
 different order used to create the related journal entries. Usually it's the service business logic that dictates in
 which `result`s the SDK is interested, and in which order.
 
-**`CompletionMessage` Headers**
+**`CompletionMessage` Header**
 
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -253,13 +258,13 @@ descriptions in [`protocol.proto`](dev/restate/service/protocol.proto).
 
 **Non-Completable journal entries**
 
-| Message                         | Type     | Description                                                                                                                                                     |
-| ------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OutputStreamEntryMessage`      | `0x0401` | Carries the service method output message(s) of the invocation. Note: currently the runtime accepts only one entry of this type, but this may change in future. |
-| `SetStateEntryMessage`          | `0x0800` | Set the value of a service instance state key.                                                                                                                  |
-| `ClearStateEntryMessage`        | `0x0801` | Clear the value of a service instance state key.                                                                                                                |
-| `BackgroundInvokeEntryMessage`  | `0x0C02` | Invoke another Restate service at the given time, without waiting for the response.                                                                             |
-| `CompleteAwakeableEntryMessage` | `0x0C04` | Complete an `Awakeable`, given its id (see `AwakeableEntryMessage`).                                                                                            |
+| Message                         | Type     | Description                                                                                                                                                                         |
+| ------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OutputStreamEntryMessage`      | `0x0401` | Carries the service method output message(s) or terminal failure of the invocation. Note: currently the runtime accepts only one entry of this type, but this may change in future. |
+| `SetStateEntryMessage`          | `0x0800` | Set the value of a service instance state key.                                                                                                                                      |
+| `ClearStateEntryMessage`        | `0x0801` | Clear the value of a service instance state key.                                                                                                                                    |
+| `BackgroundInvokeEntryMessage`  | `0x0C02` | Invoke another Restate service at the given time, without waiting for the response.                                                                                                 |
+| `CompleteAwakeableEntryMessage` | `0x0C04` | Complete an `Awakeable`, given its id (see `AwakeableEntryMessage`).                                                                                                                |
 
 ## Suspension
 
@@ -274,22 +279,35 @@ The runtime will resume the invocation as soon as at least one of the given inde
 
 ## Failures
 
-We distinguish between infrastructure failures and user failures:
+There are a number of failures that can incur during a service invocation, including:
 
-- Infrastructure failures, also called retryable failures, includes transient network errors, bugs in the SDK and
-  runtime, protocol violations, etc.
-- User failures, also called non-retryable failures, are everything else, such as external client bugs, service business
-  logic bugs, etc.
+- Transient network failures that interrupt the message stream
+- SDK bugs
+- Protocol violations
+- Business logic bugs
+- User thrown retryable errors
 
-In case of an infrastructure failure, the runtime will take care of retrying to execute the invocation, following a
-defined set of policies. When retrying, the previous stored journal will be reused. To notify an infrastructure failure,
-the SDK closes the stream without `OutputStreamEntry` or `SuspensionMessage`.
+The runtime takes care of retrying to execute the invocation after such failures occur, following a defined set of
+policies. When retrying, the previous stored journal will be reused.
 
-In case of a user failure, the SDK records it in the journal, usually in the `OutputStreamEntry.failure` field. These
-won't be retried.
+To notify a failure, the SDK can either:
 
-An SDK implementation MAY expose in the APIs the distinction between infrastructure failure and user failure, to provide
-fine-grained control over what errors should be retried or not.
+- Close the stream with an `ErrorMessage`.
+- Close the stream without `OutputStreamEntry` or `SuspensionMessage` or `ErrorMessage`. This is equivalent to sending
+  an empty `ErrorMessage`.
+
+When notifying a failure, the SDK MUST NOT assume that every journal entry previously sent on the same message stream
+has been correctly stored.
+
+**`ErrorMessage` Header**
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |             0x0003            |            Reserved           |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                             Length                            |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 ## Optional features
 

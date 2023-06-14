@@ -50,6 +50,11 @@ message SuspensionMessage {
   repeated uint32 entry_indexes = 1;  // protolint:disable:this REPEATED_FIELD_NAMES_PLURALIZED
 }
 
+// Type: 0x0000 + 3
+message ErrorMessage {
+  Failure failure = 15;
+}
+
 // --- Journal Entries ---
 
 // Every Completable JournalEntry has a result field, filled only and only if the entry is in DONE state.
@@ -167,6 +172,7 @@ message CompleteAwakeableEntryMessage {
 // --- Nested messages
 
 message Failure {
+  // Same error space of gRPC, as defined here: https://github.com/grpc/grpc/blob/master/doc/statuscodes.md#status-codes-and-their-use-in-grpc
   int32 code = 1;
   string message = 2;
 }
