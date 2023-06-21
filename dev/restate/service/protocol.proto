@@ -53,11 +53,11 @@ message SuspensionMessage {
 // Type: 0x0000 + 3
 message ErrorMessage {
   // The code can be:
-  // * Any of the error codes from gRPC, as defined here: https://github.com/grpc/grpc/blob/master/doc/statuscodes.md#status-codes-and-their-use-in-grpc
+  // * Any of the error codes defined by OutputStreamEntry.failure (see Failure message)
   // * JOURNAL_MISMATCH = 32, that is when the SDK cannot replay a journal due to the mismatch between the journal and the actual code.
   // * PROTOCOL_VIOLATION = 33, that is when the SDK receives an unexpected message or an expected message variant, given its state.
   //
-  // When 16 < code < 32, or code > 33, code 2 (UNKNOWN) will be used instead.
+  // If 16 < code < 32, or code > 33, the runtime will interpret it as code 2 (UNKNOWN).
   uint32 code = 1;
   // Contains a concise error message, e.g. Throwable#getMessage() in Java.
   string message = 2;
@@ -186,7 +186,8 @@ message CompleteAwakeableEntryMessage {
 message Failure {
   // The code should be any of the gRPC error codes,
   // as defined here: https://github.com/grpc/grpc/blob/master/doc/statuscodes.md#status-codes-and-their-use-in-grpc
-  // When code code > 16, code 2 (UNKNOWN) should be used instead.
+  //
+  // If code > 16, the runtime will interpret it as code 2 (UNKNOWN).
   uint32 code = 1;
   // Contains a concise error message, e.g. Throwable#getMessage() in Java.
   string message = 2;
