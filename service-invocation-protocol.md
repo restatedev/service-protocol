@@ -287,17 +287,20 @@ There are a number of failures that can incur during a service invocation, inclu
 - Business logic bugs
 - User thrown retryable errors
 
-The runtime takes care of retrying to execute the invocation after such failures occur, following a defined set of
-policies. When retrying, the previous stored journal will be reused.
-
 To notify a failure, the SDK can either:
 
-- Close the stream with an `ErrorMessage`.
+- Close the stream with `ErrorMessage` as last message. This message is used by the runtime for accurate reporting to
+  the user.
 - Close the stream without `OutputStreamEntry` or `SuspensionMessage` or `ErrorMessage`. This is equivalent to sending
-  an empty `ErrorMessage`.
+  an `ErrorMessage` with unknown reason.
 
-When notifying a failure, the SDK MUST NOT assume that every journal entry previously sent on the same message stream
-has been correctly stored.
+The runtime takes care of retrying to execute the invocation after such failures occur, following a defined set of
+policies. When retrying, the previous stored journal will be reused. Moreover, the SDK MUST NOT assume that every
+journal entry previously sent on the same message stream has been correctly stored.
+
+The SDK can allow users to end/terminate invocations with an exceptional return value. This is done in a similar fashion
+to the successful return value case, by generating a `OutputStreamEntry` with the `failure` variant set, sending it and
+closing the stream afterward.
 
 **`ErrorMessage` Header**
 
