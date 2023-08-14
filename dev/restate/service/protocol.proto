@@ -177,7 +177,10 @@ message CompleteAwakeableEntryMessage {
   bytes invocation_id = 3;
   uint32 entry_index = 4;
 
-  bytes payload = 5;
+  oneof result {
+    bytes value = 5;
+    Failure failure = 6;
+  };
 }
 
 // --- Nested messages
