@@ -193,3 +193,12 @@ message Failure {
   // Contains a concise error message, e.g. Throwable#getMessage() in Java.
   string message = 2;
 }
+
+// --- Other types
+
+message AwakeableIdentifier {
+  string service_name = 1;
+  bytes instance_key = 2;
+  bytes invocation_id = 3;
+  uint32 entry_index = 4;
+}
