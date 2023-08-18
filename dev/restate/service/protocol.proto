@@ -23,7 +23,7 @@ message StartMessage {
 
   // Invocation id that can be used for logging.
   // The user can use this id to address this invocation in admin and status introspection apis.
-  string id_debug = 2;
+  string debug_id = 2;
 
   uint32 known_entries = 3;
 
