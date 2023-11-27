@@ -102,7 +102,7 @@ message PollInputStreamEntryMessage {
   bytes value = 14;
 }
 
-// Kind: Non-Completable JournalEntry
+// Kind: Actionable JournalEntry
 // Type: 0x0400 + 1
 message OutputStreamEntryMessage {
   oneof result {
@@ -124,14 +124,14 @@ message GetStateEntryMessage {
   };
 }
 
-// Kind: Non-Completable JournalEntry
+// Kind: Actionable JournalEntry
 // Type: 0x0800 + 1
 message SetStateEntryMessage {
   bytes key = 1;
   bytes value = 3;
 }
 
-// Kind: Non-Completable JournalEntry
+// Kind: Actionable JournalEntry
 // Type: 0x0800 + 2
 message ClearStateEntryMessage {
   bytes key = 1;
@@ -163,7 +163,7 @@ message InvokeEntryMessage {
   };
 }
 
-// Kind: Non-Completable JournalEntry
+// Kind: Fallible JournalEntry
 // Type: 0x0C00 + 2
 message BackgroundInvokeEntryMessage {
   string service_name = 1;
@@ -188,7 +188,7 @@ message AwakeableEntryMessage {
   };
 }
 
-// Kind: Non-Completable JournalEntry
+// Kind: Fallible JournalEntry
 // Type: 0x0C00 + 4
 message CompleteAwakeableEntryMessage {
   // Identifier of the awakeable. See the spec for more details.
