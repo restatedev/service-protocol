@@ -161,15 +161,21 @@ Flags:
 
 ### Entries and Completions
 
-We distinguish among two types of journal entries:
+For each journal entry the runtime commits the entry message and executes the action atomically. The runtime won't
+commit the entry, nor perform the action, if the entry is invalid. If an entry is not committed, all the subsequent
+entries are not committed as well.
+
+We distinguish among three types of journal entries:
 
 - Completable journal entries. These represent actions the runtime will perform, and for which consequently provide a
   completion value. All these entries have a `result` field defined in the message descriptor, defining the different
   variants of the completion value, and have a `COMPLETED` flag in the header.
-- Non-completable journal entries. These represent actions the runtime will perform, but won't provide any completion
-  value to it.
+- Fallible journal entries. These represent actions the runtime can perform, for which no completions are provided, but
+  it might reject them anyway in case they're invalid.
+- Actionable journal entries. Like fallible journal entries, but they can't be rejected and the runtime always considers
+  them valid.
 
-Whether a journal entry is completable or not is intrinsic in the definition of the journal action itself.
+The type of the journal entry is intrinsic in the definition of the journal action itself.
 
 The header format for journal entries applies both when the runtime is sending entries to the SDK during a replay, and
 when the SDK sends entries to the runtime during processing.
@@ -192,7 +198,7 @@ Flags:
 - 14 bits: Reserved
 - 1 bit `C`: `COMPLETED` flag. Mask: `0x0000_0001_0000_0000`
 
-Non-Completable journal entries:
+Fallible/Actionable journal entries:
 
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -273,15 +279,20 @@ descriptions in [`protocol.proto`](dev/restate/service/protocol.proto).
 | `InvokeEntryMessage`          | `0x0C01` | Invoke another Restate service.                                                                                                                                  |
 | `AwakeableEntryMessage`       | `0x0C03` | Arbitrary result container which can be completed from another service, given a specific id. See [Awakeable identifier](#awakeable-identifier) for more details. |
 
-**Non-Completable journal entries**
+**Fallible journal entries**
 
-| Message                         | Type     | Description                                                                                                                                                                         |
-| ------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OutputStreamEntryMessage`      | `0x0401` | Carries the service method output message(s) or terminal failure of the invocation. Note: currently the runtime accepts only one entry of this type, but this may change in future. |
-| `SetStateEntryMessage`          | `0x0800` | Set the value of a service instance state key.                                                                                                                                      |
-| `ClearStateEntryMessage`        | `0x0801` | Clear the value of a service instance state key.                                                                                                                                    |
-| `BackgroundInvokeEntryMessage`  | `0x0C02` | Invoke another Restate service at the given time, without waiting for the response.                                                                                                 |
-| `CompleteAwakeableEntryMessage` | `0x0C04` | Complete an `Awakeable`, given its id. See [Awakeable identifier](#awakeable-identifier) for more details.                                                                          |
+| Message                         | Type     | Description                                                                                                |
+| ------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------- |
+| `BackgroundInvokeEntryMessage`  | `0x0C02` | Invoke another Restate service at the given time, without waiting for the response.                        |
+| `CompleteAwakeableEntryMessage` | `0x0C04` | Complete an `Awakeable`, given its id. See [Awakeable identifier](#awakeable-identifier) for more details. |
+
+**Actionable journal entries**
+
+| Message                    | Type     | Description                                                                                                                                                                         |
+| -------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OutputStreamEntryMessage` | `0x0401` | Carries the service method output message(s) or terminal failure of the invocation. Note: currently the runtime accepts only one entry of this type, but this may change in future. |
+| `SetStateEntryMessage`     | `0x0800` | Set the value of a service instance state key.                                                                                                                                      |
+| `ClearStateEntryMessage`   | `0x0801` | Clear the value of a service instance state key.                                                                                                                                    |
 
 #### Awakeable identifier
 
