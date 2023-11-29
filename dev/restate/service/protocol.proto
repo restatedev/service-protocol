@@ -42,7 +42,6 @@ message StartMessage {
 }
 
 // Type: 0x0000 + 1
-// Note: Acks to custom messages will have the `empty` field filled.
 message CompletionMessage {
   uint32 entry_index = 1;
 
@@ -51,6 +50,11 @@ message CompletionMessage {
     bytes value = 14;
     Failure failure = 15;
   };
+}
+
+// Type: 0x0000 + 4
+message EntryAckMessage {
+  uint32 entry_index = 1;
 }
 
 // Type: 0x0000 + 2
