@@ -293,6 +293,7 @@ descriptions in [`protocol.proto`](dev/restate/service/protocol.proto).
 | `OutputStreamEntryMessage` | `0x0401` | Carries the service method output message(s) or terminal failure of the invocation. Note: currently the runtime accepts only one entry of this type, but this may change in future. |
 | `SetStateEntryMessage`     | `0x0800` | Set the value of a service instance state key.                                                                                                                                      |
 | `ClearStateEntryMessage`   | `0x0801` | Clear the value of a service instance state key.                                                                                                                                    |
+| `CancelledEntryMessage`    | `0x0C05` | Marks the beginning of the cancellation. See [Cancelling an invocation](#cancelling-an-invocation)                                                                                  |
 
 #### Awakeable identifier
 

@@ -202,6 +202,12 @@ message CompleteAwakeableEntryMessage {
   };
 }
 
+// Kind: Actionable JournalEntry
+// Type: 0x0C00 + 5
+message CancelledEntryMessage {
+
+}
+
 // --- Nested messages
 
 // This failure object carries user visible errors,
