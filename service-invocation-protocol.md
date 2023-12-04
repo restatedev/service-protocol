@@ -41,7 +41,8 @@ Depending on the specific syscall, the Restate runtime generates as response eit
 
 Each syscall defines a priori whether it replies with an ack or a completion, or doesn't reply at all.
 
-There are a couple of special message streams for initializing and closing the invocation.
+Depending on the programming language and/or specific SDK, the SDKs expose a way to await completions using some form of
+`Future` type.
 
 ### Replaying and Processing
 
@@ -356,6 +357,25 @@ closing the stream afterward.
 
 The following section describes optional features SDK developers MAY implement to improve the experience and provide
 additional features to the users.
+
+### Cancelling an invocation
+
+The Restate runtime has a feature to send a signal to "cancel" an invocation, in order to allow the user to eventually
+execute operations to revert/compensate its progress.
+
+The idea is that the SDK receives the signal at the beginning of the invocation, surfaces it in the user space and at
+the same time records in the journal where it surfaced.
+
+To start the cancellation process, the runtime invokes the SDK with the `StartMessage.cancelled` set to `true`. It's up
+to the SDKs to decide how and when to surface the cancellation signal to the user code, be it an exception, or a
+saga-like library, or a mix of both. During the handling of the cancellation, the SDK MUST be able to suspend.
+
+The SDK must guarantee that the cancellation signal is fired in the user code deterministically, meaning that on a
+subsequent replay of the invocation, e.g. due to a suspension or a network error, the signal should be fired again on
+the same point. For this purpose the SDKs can record, when needed, the point where the cancellation signal was fired by
+using the `CancelledEntryMessage`.
+
+When the SDK doesn't implement cancellation, the runtime cancellation signal has no effect on the target invocation.
 
 ### Custom entry messages
 
