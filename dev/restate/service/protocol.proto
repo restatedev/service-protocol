@@ -159,6 +159,8 @@ message InvokeEntryMessage {
 
   bytes parameter = 3;
 
+  repeated Header headers = 4;
+
   oneof result {
     bytes value = 14;
     Failure failure = 15;
@@ -178,6 +180,8 @@ message BackgroundInvokeEntryMessage {
   // If this value is not set, equal to 0, or past in time,
   // the runtime will execute this BackgroundInvoke as soon as possible.
   uint64 invoke_time = 4;
+
+  repeated Header headers = 5;
 }
 
 // Kind: Completable JournalEntry
