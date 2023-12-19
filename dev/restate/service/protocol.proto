@@ -69,18 +69,10 @@ message SuspensionMessage {
 }
 
 // Type: 0x0000 + 3
-message ErrorMessage {
-  // The code can be:
-  // * Any of the error codes defined by OutputStreamEntry.failure (see Failure message)
-  // * JOURNAL_MISMATCH = 32, that is when the SDK cannot replay a journal due to the mismatch between the journal and the actual code.
-  // * PROTOCOL_VIOLATION = 33, that is when the SDK receives an unexpected message or an expected message variant, given its state.
-  //
-  // If 16 < code < 32, or code > 33, the runtime will interpret it as code 2 (UNKNOWN).
-  uint32 code = 1;
-  // Contains a concise error message, e.g. Throwable#getMessage() in Java.
-  string message = 2;
-  // Contains a verbose error description, e.g. the exception stacktrace.
-  string description = 3;
+// Implementations MUST send this message when the invocation lifecycle ends.
+message EndMessage {
+  // If empty, or failure.code == 0, no failure
+  DetailedFailure failure = 1;
 }
 
 // --- Journal Entries ---
@@ -229,4 +221,19 @@ message Failure {
   uint32 code = 1;
   // Contains a concise error message, e.g. Throwable#getMessage() in Java.
   string message = 2;
+}
+
+// This failure object carries user visible errors and diagnostic errors, e.g. to be shown in observability tools.
+message DetailedFailure {
+  // The code can be:
+  // * Any of the error codes defined by OutputStreamEntry.failure (see Failure message)
+  // * JOURNAL_MISMATCH = 32, that is when the SDK cannot replay a journal due to the mismatch between the journal and the actual code.
+  // * PROTOCOL_VIOLATION = 33, that is when the SDK receives an unexpected message or an expected message variant, given its state.
+  //
+  // If 16 < code < 32, or code > 33, the runtime will interpret it as code 2 (UNKNOWN).
+  uint32 code = 1;
+  // Contains a concise error message, e.g. Throwable#getMessage() in Java.
+  string message = 2;
+  // Contains a verbose error description, e.g. the exception stacktrace.
+  string description = 3;
 }
