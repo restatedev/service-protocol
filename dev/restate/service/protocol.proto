@@ -85,7 +85,8 @@ message EntryAckMessage {
 
 // Type: 0x0000 + 5
 // Implementations MUST send this message when the invocation lifecycle ends.
-message EndMessage {}
+message EndMessage {
+}
 
 // --- Journal Entries ---
 
