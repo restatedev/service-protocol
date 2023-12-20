@@ -27,19 +27,31 @@ Every invocation state machine begins when the stream is opened and ends when th
 arbitrary interaction can be performed from the Service endpoint to the Runtime and vice versa via well-defined
 messages.
 
-### Syscalls
+The state machine is summarized in the following diagram:
 
-Most Restate features, such as interaction with other services, accessing service instance state, and so on, are defined
-as _Restate syscalls_ and exposed through the service protocol. The user interacts with these syscalls using the SDK
-APIs, which generate _Journal Entry_ messages that will be handled by the invocation state machine.
-
-Depending on the specific syscall, the Restate runtime generates as response either:
-
-- A completion, that is the response to the syscall
-- An ack, that is a confirmation the syscall has been persisted and **will** be executed
-- Nothing
-
-Each syscall defines a priori whether it replies with an ack or a completion, or doesn't reply at all.
+```mermaid
+sequenceDiagram
+    Note over Runtime,SDK: Start
+    Runtime->>SDK: HTTP Request to /invoke/{service}/{method}
+    Runtime->>SDK: StartMessage
+    Note over Runtime,SDK: Replaying
+    Runtime->>SDK: [...]EntryMessage(s)
+    Note over Runtime,SDK: Processing
+    loop
+        SDK->>Runtime: [...]EntryMessage
+        Runtime->>SDK: CompletionMessage and/or EntryAckMessage
+    end
+    Note over SDK: Reached close condition
+    alt
+        SDK->>Runtime: SuspensionMessage
+    else
+        SDK->>Runtime: ErrorMessage
+    else
+        SDK->>Runtime: EndMessage
+    end
+    SDK->>Runtime: Close HTTP Response
+    Note over Runtime,SDK: Closed
+```
 
 ### Replaying and Processing
 
@@ -61,6 +73,20 @@ There are a couple of properties that we enforce through the design of the proto
   service endpoint to make sure the runtime has the same ordered view of the journal it has.
 - Only in processing state the runtime can send
   [`CompletionMessage`](#completable-journal-entries-and-completionmessage)
+
+### Syscalls
+
+Most Restate features, such as interaction with other services, accessing service instance state, and so on, are defined
+as _Restate syscalls_ and exposed through the service protocol. The user interacts with these syscalls using the SDK
+APIs, which generate _Journal Entry_ messages that will be handled by the invocation state machine.
+
+Depending on the specific syscall, the Restate runtime generates as response either:
+
+- A completion, that is the response to the syscall
+- An ack, that is a confirmation the syscall has been persisted and **will** be executed
+- Nothing
+
+Each syscall defines a priori whether it replies with an ack or a completion, or doesn't reply at all.
 
 ## Messages
 
@@ -118,6 +144,8 @@ A message stream MUST start with `StartMessage` and MUST end with either:
 
 If the message stream does not end with any of these two messages, it will be considered equivalent to sending an
 `ErrorMessage` with an [unknown failure](#failures).
+
+The `EndMessage` marks the end of the invocation lifecycle, that is the end of the journal.
 
 ### Message header
 
