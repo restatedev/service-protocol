@@ -329,7 +329,7 @@ To notify a failure, the SDK can either:
 
 - Close the stream with `ErrorMessage` as last message. This message is used by the runtime for accurate reporting to
   the user.
-- Close the stream without `OutputStreamEntry` or `SuspensionMessage` or `ErrorMessage`. This is equivalent to sending
+- Close the stream without `EndMessage` or `SuspensionMessage` or `ErrorMessage`. This is equivalent to sending
   an `ErrorMessage` with unknown reason.
 
 The runtime takes care of retrying to execute the invocation after such failures occur, following a defined set of
