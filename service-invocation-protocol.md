@@ -7,7 +7,7 @@ The following specification describes the protocol used by Restate to invoke rem
 The system is composed of two actors:
 
 - Restate Runtime
-- Service endpoint, which is split into:
+- Service deployment, which is split into:
   - SDK, which contains the implementation of the Restate Protocol
   - User business logic, which interacts with the SDK to access Restate system calls (or syscalls)
 
@@ -16,15 +16,15 @@ either by user code or by _Runtime events_.
 
 Every state transition is logged in the _Invocation journal_, used to implement Restate's durable execution model. The
 journal is also used to suspend an invocation and resume it at a later point in time. The _Invocation journal_ is
-tracked both by Restate's runtime and the service endpoint.
+tracked both by Restate's runtime and the service deployment.
 
-Runtime and service endpoint exchange _Messages_ containing the invocation journal and runtime events through an HTTP
+Runtime and service deployment exchange _Messages_ containing the invocation journal and runtime events through an HTTP
 message stream.
 
 ## State machine and journal
 
 Every invocation state machine begins when the stream is opened and ends when the stream is closed. In the middle,
-arbitrary interaction can be performed from the Service endpoint to the Runtime and vice versa via well-defined
+arbitrary interaction can be performed from the Service deployment to the Runtime and vice versa via well-defined
 messages.
 
 The state machine is summarized in the following diagram:
@@ -63,14 +63,14 @@ Both runtime and SDKs transition the message stream through 2 states:
 
 There are a couple of properties that we enforce through the design of the protocol:
 
-- Runtime and service endpoint both have their view of the journal
+- Runtime and service deployment both have their view of the journal
 - The source of truth of the journal and its ordering is:
   - The runtime, when the invocation is not in _processing_ state
-  - The service endpoint, when the invocation is in _processing_ state
-- When in _replaying_ state, the service endpoint cannot create new journal entries.
-- When in _processing_ state, only the service endpoint can create new journal entries, picking their order.
+  - The service deployment, when the invocation is in _processing_ state
+- When in _replaying_ state, the service deployment cannot create new journal entries.
+- When in _processing_ state, only the service deployment can create new journal entries, picking their order.
   Consequently, it might have newer entries that the runtime is not aware of. It’s also the responsibility of the
-  service endpoint to make sure the runtime has the same ordered view of the journal it has.
+  service deployment to make sure the runtime has the same ordered view of the journal it has.
 - Only in processing state the runtime can send
   [`CompletionMessage`](#completable-journal-entries-and-completionmessage)
 
@@ -90,7 +90,7 @@ Each syscall defines a priori whether it replies with an ack or a completion, or
 
 ## Messages
 
-The protocol is composed by messages that are sent back and forth between runtime and service Endpoint. The protocol
+The protocol is composed by messages that are sent back and forth between runtime and the service deployment. The protocol
 mandates the following messages:
 
 - `StartMessage`
@@ -102,8 +102,8 @@ mandates the following messages:
 
 ### Message stream
 
-In order to execute a service method invocation, service endpoint and restate Runtime open a single stream between the
-runtime and the service endpoint. Given 10 concurrent service method invocations to a service endpoint, there are 10
+In order to execute a service method invocation, service deployment and restate Runtime open a single stream between the
+runtime and the service deployment. Given 10 concurrent service method invocations to a service deployment, there are 10
 concurrent streams, each of them mapping to a specific invocation.
 
 Every unit of the stream contains a Message serialized using the
@@ -115,9 +115,9 @@ in two modes:
 
 - Full duplex (bidirectional) stream: Messages are sent back and forth on the same stream at the same time. This option
   is supported only when using HTTP/2.
-- Request/Response stream: Messages are sent from runtime to service endpoint, and later from service endpoint to
-  runtime. Once the service endpoint starts sending messages to the runtime, the runtime cannot send messages anymore
-  back to the service endpoint.
+- Request/Response stream: Messages are sent from runtime to service deployment, and later from service deployment to
+  runtime. Once the service deployment starts sending messages to the runtime, the runtime cannot send messages anymore
+  back to the service deployment.
 
 When opening the stream, the request method MUST be `POST` and the request path MUST have the following format:
 
