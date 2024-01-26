@@ -298,11 +298,13 @@ descriptions in [`protocol.proto`](dev/restate/service/protocol.proto).
 When creating an `AwakeableEntryMessage`, the SDK MUST expose to the user code an id, required to later complete the
 entry, using either `CompleteAwakeableEntryMessage` or some other mechanism provided by the runtime.
 
-The id format is a [Base64 URL Safe string](https://datatracker.ietf.org/doc/html/rfc4648#section-5) encoding a byte
+The id format is a string starts with `prom_1` concatenated with a [Base64 URL Safe string](https://datatracker.ietf.org/doc/html/rfc4648#section-5) encoding of a byte
 array that concatenates:
 
 - `StartMessage.id`
 - The index of the Awakeable entry, encoded as unsigned 32 bit integer big endian.
+
+An example of a valid identifier would look like `prom_1NMyOAvDK2CcBjUH4Rmb7eGBp0DNNDnmsAAAAAQ`
 
 ## Suspension
 
