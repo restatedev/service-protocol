@@ -90,8 +90,8 @@ Each syscall defines a priori whether it replies with an ack or a completion, or
 
 ## Messages
 
-The protocol is composed by messages that are sent back and forth between runtime and the service deployment. The protocol
-mandates the following messages:
+The protocol is composed by messages that are sent back and forth between runtime and the service deployment. The
+protocol mandates the following messages:
 
 - `StartMessage`
 - `[..]EntryMessage`
@@ -292,14 +292,16 @@ descriptions in [`protocol.proto`](dev/restate/service/protocol.proto).
 | `OutputStreamEntryMessage`      | `0x0401` | No          | No       | Carries the invocation output message(s) or terminal failure of the invocation.                                                                                  |
 | `SetStateEntryMessage`          | `0x0800` | No          | No       | Set the value of a service instance state key.                                                                                                                   |
 | `ClearStateEntryMessage`        | `0x0801` | No          | No       | Clear the value of a service instance state key.                                                                                                                 |
+| `ClearAllStateEntryMessage`     | `0x0802` | No          | No       | Clear all the values of the service instance state.                                                                                                              |
 
 #### Awakeable identifier
 
 When creating an `AwakeableEntryMessage`, the SDK MUST expose to the user code an id, required to later complete the
 entry, using either `CompleteAwakeableEntryMessage` or some other mechanism provided by the runtime.
 
-The id format is a string starts with `prom_1` concatenated with a [Base64 URL Safe string](https://datatracker.ietf.org/doc/html/rfc4648#section-5) encoding of a byte
-array that concatenates:
+The id format is a string starts with `prom_1` concatenated with a
+[Base64 URL Safe string](https://datatracker.ietf.org/doc/html/rfc4648#section-5) encoding of a byte array that
+concatenates:
 
 - `StartMessage.id`
 - The index of the Awakeable entry, encoded as unsigned 32 bit integer big endian.
@@ -331,8 +333,8 @@ To notify a failure, the SDK can either:
 
 - Close the stream with `ErrorMessage` as last message. This message is used by the runtime for accurate reporting to
   the user.
-- Close the stream without `EndMessage` or `SuspensionMessage` or `ErrorMessage`. This is equivalent to sending
-  an `ErrorMessage` with unknown reason.
+- Close the stream without `EndMessage` or `SuspensionMessage` or `ErrorMessage`. This is equivalent to sending an
+  `ErrorMessage` with unknown reason.
 
 The runtime takes care of retrying to execute the invocation after such failures occur, following a defined set of
 policies. When retrying, the previous stored journal will be reused. Moreover, the SDK MUST NOT assume that every
@@ -400,5 +402,5 @@ A possible implementation could be the following. Given a user requests a state 
   - If `partial_state` is set, generate a `GetStateEntryMessage` without a `result`, and wait for the runtime to send a
     `Completion` back (same logic as without eager state)
 
-In order for the aforementioned algorithm to work, set and clear state operations must be reflected on the local
-`state_map` as well.
+In order for the aforementioned algorithm to work, set, clear and clear all state operations must be reflected on the
+local `state_map` as well.
