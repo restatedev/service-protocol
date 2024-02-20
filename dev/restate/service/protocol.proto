@@ -41,6 +41,9 @@ message StartMessage {
   bool partial_state = 5;
 
   repeated Header headers = 6;
+
+  // If this invocation has a key associated (e.g. for objects and workflows), then this key is filled in. Empty otherwise.
+  string key = 7;
 }
 
 // Type: 0x0000 + 1
@@ -200,6 +203,9 @@ message InvokeEntryMessage {
 
   repeated Header headers = 4;
 
+  // If this invocation has a key associated (e.g. for objects and workflows), then this key is filled in. Empty otherwise.
+  string key = 5;
+
   oneof result {
     bytes value = 14;
     Failure failure = 15;
@@ -222,6 +228,9 @@ message BackgroundInvokeEntryMessage {
   uint64 invoke_time = 4;
 
   repeated Header headers = 5;
+
+  // If this invocation has a key associated (e.g. for objects and workflows), then this key is filled in. Empty otherwise.
+  string key = 6;
 }
 
 // Completable: Yes
