@@ -41,8 +41,47 @@
                   "type": "string",
                   "pattern": "^([a-zA-Z]|_[a-zA-Z0-9])[a-zA-Z0-9_]*$"
                 },
-                "inputSchema": {},
-                "outputSchema": {}
+                "input": {
+                  "type": "object",
+                  "title": "InputPayload",
+                  "description": "Description of an input payload.",
+                  "properties": {
+                    "contentType": {
+                      "type": "string",
+                      "description": "Content type of the input. This will be used by Restate to validate incoming requests. It can accept wildcards, in the same format as the 'Accept' header."
+                    },
+                    "empty": {
+                      "enum": ["ALLOW", "DISALLOW", "REQUIRE"],
+                      "description": "If ALLOW, Restate will allow requests with empty body without content-type, if DISALLOW, Restate won't allow requests with empty input and no content-type, if REQUIRE, Restate will allow only requests with empty input and no content-type."
+                    },
+                    "jsonSchema": {}
+                  },
+                  "additionalProperties": false,
+                  "default": {
+                    "contentType": "*/*",
+                    "empty": "ALLOW"
+                  }
+                },
+                "output": {
+                  "type": "object",
+                  "title": "OutputPayload",
+                  "description": "Description of an output payload.",
+                  "properties": {
+                    "contentType": {
+                      "type": "string",
+                      "description": "Content type set on output. This will be used by Restate to set the output content type at the ingress."
+                    },
+                    "setContentTypeIfEmpty": {
+                      "type": "boolean",
+                      "description": "If true, the specified content-type is set even if the output is empty."
+                    }
+                  },
+                  "additionalProperties": false,
+                  "default": {
+                    "contentType": "application/json",
+                    "setContentTypeIfEmpty": false
+                  }
+                }
               },
               "required": [ "name" ],
               "additionalProperties": false
