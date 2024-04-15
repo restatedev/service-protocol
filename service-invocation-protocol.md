@@ -11,7 +11,7 @@ The system is composed of two actors:
   - SDK, which contains the implementation of the Restate Protocol
   - User business logic, which interacts with the SDK to access Restate system calls (or syscalls)
 
-Each service method invocation is modeled by the protocol as a state machine, where state transitions can be caused
+Each invocation is modeled by the protocol as a state machine, where state transitions can be caused
 either by user code or by _Runtime events_.
 
 Every state transition is logged in the _Invocation journal_, used to implement Restate's durable execution model. The
@@ -32,11 +32,12 @@ The state machine is summarized in the following diagram:
 ```mermaid
 sequenceDiagram
     Note over Runtime,SDK: Start
-    Runtime->>SDK: HTTP Request to /invoke/{service}/{method}
+    Runtime->>SDK: HTTP Request to /invoke/{service}/{handler}
     Runtime->>SDK: StartMessage
     Note over Runtime,SDK: Replaying
     Runtime->>SDK: [...]EntryMessage(s)
     Note over Runtime,SDK: Processing
+    SDK->>Runtime: HTTP Response headers
     loop
         SDK->>Runtime: [...]EntryMessage
         Runtime->>SDK: CompletionMessage and/or EntryAckMessage
@@ -102,9 +103,7 @@ protocol mandates the following messages:
 
 ### Message stream
 
-In order to execute a service method invocation, service deployment and restate Runtime open a single stream between the
-runtime and the service deployment. Given 10 concurrent service method invocations to a service deployment, there are 10
-concurrent streams, each of them mapping to a specific invocation.
+In order to execute an invocation, service deployment and restate Runtime open a single stream between the runtime and the service deployment. Given 10 concurrent invocations to a service deployment, there are 10 concurrent streams, each of them mapping to a specific invocation.
 
 Every unit of the stream contains a Message serialized using the
 [Protobuf encoding](https://protobuf.dev/programming-guides/encoding/), using the definitions in
@@ -119,23 +118,6 @@ in two modes:
   runtime. Once the service deployment starts sending messages to the runtime, the runtime cannot send messages anymore
   back to the service deployment.
 
-When opening the stream, the request method MUST be `POST` and the request path MUST have the following format:
-
-```
-/invoke/{fullyQualifiedServiceName}/{methodName}
-```
-
-For example:
-
-```
-/invoke/counter.Counter/Add
-```
-
-An arbitrary path MAY prepend the aforementioned path format.
-
-In case the path format is not respected, or `fullyQualifiedServiceName` or `methodName` is unknown, the SDK MUST close
-the stream replying back with a `404` status code.
-
 A message stream MUST start with `StartMessage` and MUST end with either:
 
 - One [`SuspensionMessage`](#suspension)
@@ -146,6 +128,46 @@ If the message stream does not end with any of these two messages, it will be co
 `ErrorMessage` with an [unknown failure](#failures).
 
 The `EndMessage` marks the end of the invocation lifecycle, that is the end of the journal.
+
+### Initiating the stream
+
+When opening the stream, the HTTP request method MUST be `POST` and the request path MUST have the following format:
+
+```
+/invoke/{serviceName}/{handlerName}
+```
+
+For example:
+
+```
+/invoke/counter.Counter/Add
+```
+
+An arbitrary path MAY prepend the aforementioned path format.
+
+In case the path format is not respected, or `serviceName` or `handlerName` is unknown, the SDK MUST close the stream replying back with a `404` status code.
+
+In case the invocation is accepted, `200` status code MUST be returned.
+
+Additionally, the header `x-restate-user-agent` MAY be sent back, with the following format:
+
+```http request
+x-restate-user-agent: <sdk-name> / <sdk-version>; <additional-metadata?>
+```
+
+E.g.:
+
+```http request
+x-restate-user-agent: restate-sdk-java/0.8.0
+```
+
+Or:
+
+```http request
+x-restate-user-agent: restate-sdk-java/0.8.0; gitHash=0c5917b
+```
+
+This header is used for observability purposes by the Restate observability tools.
 
 ### Message header
 
