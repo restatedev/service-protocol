@@ -405,3 +405,15 @@ A possible implementation could be the following. Given a user requests a state 
 
 In order for the aforementioned algorithm to work, set, clear and clear all state operations must be reflected on the
 local `state_map` as well.
+
+### Side effect/Run
+
+The side effect/run feature allows users to execute arbitrary non-deterministic code within their service and record the
+result, such that on re-executions the stored value will be used instead of replaying the given code.
+
+SDKs MAY implement the side effect feature by storing the result using a custom entry message, as described in
+[Custom entry](#custom-entry-messages). By convention, the SDKs SHOULD use the entry type `FC01` for side effects.
+
+When storing side effects, SDKs MAY need to wait for the
+[acknowledgment of the stored entry](#acknowledgment-of-stored-entries) before continuing the execution of the
+invocation.
