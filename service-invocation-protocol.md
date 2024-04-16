@@ -297,6 +297,11 @@ index of the corresponding entry.
     |                             Length                            |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+#### Entry names
+
+Every Journal entry has a field `string name = 12`, which can be set by the SDK when recording the entry. This field is
+used for observability purposes by Restate observability tools.
+
 ### Journal entries reference
 
 The following tables describe the currently available journal entries. For more details, check the protobuf message
@@ -386,6 +391,11 @@ additional features to the users.
 
 The protocol allows the SDK to register an arbitrary entry type within the journal. The type MUST be `>= 0xFC00`. The
 runtime will treat this entry as any other entry, persisting it and sending it during replay in the correct order.
+
+Custom entries MAY have the entry name field `12`, as described in [entry names](#entry-names).
+
+The field numbers 13, 14 and 15 MUST not be used, as they're reserved for completable journal entries, as described in
+[completable journal entries](#completable-journal-entries-and-completionmessage).
 
 **Header**
 
