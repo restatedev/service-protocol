@@ -149,22 +149,16 @@ In case the path format is not respected, or `serviceName` or `handlerName` is u
 
 In case the invocation is accepted, `200` status code MUST be returned.
 
-Additionally, the header `x-restate-user-agent` MAY be sent back, with the following format:
+Additionally, the header `x-restate-server` MAY be sent back, with the following format:
 
 ```http request
-x-restate-user-agent: <sdk-name> / <sdk-version>; <additional-metadata?>
+x-restate-server: <sdk-name> / <sdk-version>
 ```
 
 E.g.:
 
 ```http request
-x-restate-user-agent: restate-sdk-java/0.8.0
-```
-
-Or:
-
-```http request
-x-restate-user-agent: restate-sdk-java/0.8.0; gitHash=0c5917b
+x-restate-server: restate-sdk-java/0.8.0
 ```
 
 This header is used for observability purposes by the Restate observability tools.
