@@ -11,8 +11,8 @@ The system is composed of two actors:
   - SDK, which contains the implementation of the Restate Protocol
   - User business logic, which interacts with the SDK to access Restate system calls (or syscalls)
 
-Each invocation is modeled by the protocol as a state machine, where state transitions can be caused
-either by user code or by _Runtime events_.
+Each invocation is modeled by the protocol as a state machine, where state transitions can be caused either by user code
+or by _Runtime events_.
 
 Every state transition is logged in the _Invocation journal_, used to implement Restate's durable execution model. The
 journal is also used to suspend an invocation and resume it at a later point in time. The _Invocation journal_ is
@@ -103,7 +103,9 @@ protocol mandates the following messages:
 
 ### Message stream
 
-In order to execute an invocation, service deployment and restate Runtime open a single stream between the runtime and the service deployment. Given 10 concurrent invocations to a service deployment, there are 10 concurrent streams, each of them mapping to a specific invocation.
+In order to execute an invocation, service deployment and restate Runtime open a single stream between the runtime and
+the service deployment. Given 10 concurrent invocations to a service deployment, there are 10 concurrent streams, each
+of them mapping to a specific invocation.
 
 Every unit of the stream contains a Message serialized using the
 [Protobuf encoding](https://protobuf.dev/programming-guides/encoding/), using the definitions in
@@ -145,7 +147,8 @@ For example:
 
 An arbitrary path MAY prepend the aforementioned path format.
 
-In case the path format is not respected, or `serviceName` or `handlerName` is unknown, the SDK MUST close the stream replying back with a `404` status code.
+In case the path format is not respected, or `serviceName` or `handlerName` is unknown, the SDK MUST close the stream
+replying back with a `404` status code.
 
 In case the invocation is accepted, `200` status code MUST be returned.
 
