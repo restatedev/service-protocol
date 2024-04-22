@@ -245,7 +245,7 @@ message CallEntryMessage {
 // Completable: No
 // Fallible: Yes
 // Type: 0x0C00 + 2
-message SendCallEntryMessage {
+message OneWayCallEntryMessage {
   string service_name = 1;
   string handler_name = 2;
 
