@@ -31,7 +31,7 @@
           },
           "ty": {
             "title": "ServiceType",
-            "enum": ["VIRTUAL_OBJECT", "SERVICE"]
+            "enum": ["VIRTUAL_OBJECT", "SERVICE", "WORKFLOW"]
           },
           "handlers": {
             "type": "array",
@@ -45,8 +45,8 @@
                 },
                 "ty": {
                   "title": "HandlerType",
-                  "enum": ["EXCLUSIVE", "SHARED"],
-                  "description": "If unspecified, defaults to EXCLUSIVE for Virtual Object. This should be unset for Services."
+                  "enum": ["WORKFLOW", "EXCLUSIVE", "SHARED"],
+                  "description": "If unspecified, defaults to EXCLUSIVE for Virtual Object or WORKFLOW for Workflows. This should be unset for Services."
                 },
                 "input": {
                   "type": "object",
