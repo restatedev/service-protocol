@@ -251,15 +251,44 @@ message AppendStreamEntryMessage {
 // Completable: Yes
 // Fallible: No
 // Type: 0x0800 + 8
-message SetStreamEntryMessage {
+message GetPromiseEntryMessage {
   string key = 1;
-  int32 index = 2;
-  bytes value = 3;
 
   oneof result {
-    // Returns empty if value was set successfully
+    bytes value = 14;
+    Failure failure = 15;
+  };
+
+  // Entry name
+  string name = 12;
+}
+
+// Completable: Yes
+// Fallible: No
+// Type: 0x0800 + 9
+message PeekPromiseEntryMessage {
+  string key = 1;
+
+  oneof result {
     Empty empty = 13;
-    // Returns a failure if the value was already set or index != stream length
+    bytes value = 14;
+    Failure failure = 15;
+  };
+
+  // Entry name
+  string name = 12;
+}
+
+// Completable: Yes
+// Fallible: No
+// Type: 0x0800 + A
+message CompletePromiseEntryMessage {
+  string key = 1;
+
+  oneof completion {
+    // Returns empty if value was set successfully
+    bytes value = 14;
+    // Returns a failure if the promise was already completed
     Failure failure = 15;
   }
 
