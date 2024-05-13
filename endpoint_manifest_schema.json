@@ -11,12 +11,14 @@
     },
     "minProtocolVersion": {
       "type": "integer",
-      "minimum": 0,
+      "minimum": 1,
+      "maximum": 2147483647,
       "description": "Minimum supported protocol version"
     },
     "maxProtocolVersion": {
       "type": "integer",
-      "maximum": 0,
+      "minimum": 1,
+      "maximum": 2147483647,
       "description": "Maximum supported protocol version"
     },
     "services": {
