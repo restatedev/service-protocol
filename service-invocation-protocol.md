@@ -160,12 +160,15 @@ replying back with a `404` status code.
 
 #### Content type and protocol version
 
-The request contains the content-type `application/vnd.restate.invocation.vX` where `vX` is the protocol version chosen
-by the runtime, e.g.:
+The request contains the content-type `application/vnd.restate.invocation.vX` where `X` is the service protocol version
+chosen by the runtime, e.g.:
 
 ```http request
 content-type: application/vnd.restate.invocation.v1
 ```
+
+The service protocol version is defined by `ServiceProtocolVersion` in
+[`protocol.proto`](dev/restate/service/protocol.proto).
 
 The SDK MUST return back the same content-type in the successful response case. If the SDK doesn't support the
 content-type, It SHOULD close the stream replying back with a `415` status code.
@@ -425,6 +428,9 @@ When replying, the content-type MUST contain the chosen endpoint manifest type/v
 ```http
 content-type: application/vnd.restate.endpointmanifest.v1+json
 ```
+
+The service discovery protocol version is defined by `ServiceDiscoveryProtocolVersion` in
+[`discovery.proto`](dev/restate/service/discovery.proto).
 
 ## Optional features
 

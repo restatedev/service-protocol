@@ -14,6 +14,13 @@ package dev.restate.service.protocol;
 option java_package = "dev.restate.generated.service.protocol";
 option go_package = "restate.dev/sdk-go/pb/service/protocol";
 
+// Service protocol version.
+enum ServiceProtocolVersion {
+  SERVICE_PROTOCOL_VERSION_UNSPECIFIED = 0;
+  // initial service protocol version
+  V1 = 1;
+}
+
 // --- Core frames ---
 
 // Type: 0x0000 + 0
