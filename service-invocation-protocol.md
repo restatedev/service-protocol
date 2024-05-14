@@ -416,6 +416,13 @@ manifest version. For example:
 content-type: application/vnd.restate.endpointmanifest.v1+json
 ```
 
+When sending the discovery request, the Restate runtime might specify a version range in the `Accept` header, for
+example:
+
+```http request
+accept: application/vnd.restate.endpointmanifest.v2+json, application/vnd.restate.endpointmanifest.v1+json
+```
+
 ## Optional features
 
 The following section describes optional features SDK developers MAY implement to improve the experience and provide
