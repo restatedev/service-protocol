@@ -293,7 +293,7 @@ message CompletePromiseEntryMessage {
 
   oneof result {
     // Returns empty if value was set successfully
-    Empty value = 14;
+    Empty empty = 13;
     // Returns a failure if the promise was already completed
     Failure failure = 15;
   }
