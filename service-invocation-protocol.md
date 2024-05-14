@@ -406,21 +406,21 @@ closing the stream afterward.
 ## Endpoint discovery
 
 Restate expects SDKs to provide reflective information about the exposed services and the supported protocol versions at
-`/discovery`.
+`/discovery`. These reflective information are propagated through an _endpoint manifest_. This document MUST follow the
+schema defined in [endpoint_manifest_schema.json](./endpoint_manifest_schema.json) and is identified by the content-type
+string `application/vnd.restate.endpointmanifest.vX+json`, where `X` is the manifest version.
 
-The returned manifest schema is specified in [endpoint_manifest_schema.json](./endpoint_manifest_schema.json). The
-content-type of the returned manifest MUST be `application/vnd.restate.endpointmanifest.vX+json`, where `X` is the
-manifest version. For example:
+When sending the discovery request, the Restate runtime might specify a set of supported endpoint manifest schemas in
+the [`Accept`](https://httpwg.org/specs/rfc9110.html#field.accept) header, for example:
 
-```http request
-content-type: application/vnd.restate.endpointmanifest.v1+json
+```http
+accept: application/vnd.restate.endpointmanifest.v2+json, application/vnd.restate.endpointmanifest.v1+json
 ```
 
-When sending the discovery request, the Restate runtime might specify a version range in the `Accept` header, for
-example:
+When replying, the content-type MUST contain the chosen endpoint manifest type/version:
 
-```http request
-accept: application/vnd.restate.endpointmanifest.v2+json, application/vnd.restate.endpointmanifest.v1+json
+```http
+content-type: application/vnd.restate.endpointmanifest.v1+json
 ```
 
 ## Optional features
