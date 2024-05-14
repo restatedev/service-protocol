@@ -285,9 +285,15 @@ message PeekPromiseEntryMessage {
 message CompletePromiseEntryMessage {
   string key = 1;
 
+  // The value to use to complete the promise
   oneof completion {
+    bytes completion_value = 2;
+    Failure completion_failure = 3;
+  };
+
+  oneof result {
     // Returns empty if value was set successfully
-    bytes value = 14;
+    Empty value = 14;
     // Returns a failure if the promise was already completed
     Failure failure = 15;
   }
