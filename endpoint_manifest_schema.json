@@ -1,9 +1,9 @@
 {
-  "$id": "https://restate.dev/deployment.manifest.json",
+  "$id": "https://restate.dev/endpoint.manifest.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
-  "title": "Deployment",
-  "description": "Restate deployment manifest",
+  "title": "Endpoint",
+  "description": "Restate endpoint manifest v1",
   "properties": {
     "protocolMode": {
       "title": "ProtocolMode",
@@ -11,11 +11,13 @@
     },
     "minProtocolVersion": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "description": "Minimum supported protocol version"
     },
     "maxProtocolVersion": {
       "type": "integer",
-      "maximum": 0
+      "maximum": 0,
+      "description": "Maximum supported protocol version"
     },
     "services": {
       "type": "array",
