@@ -202,54 +202,6 @@ message GetStateKeysEntryMessage {
 
 // Completable: Yes
 // Fallible: No
-// Type: 0x0800 + 5
-message PeekStreamEntryMessage {
-  string key = 1;
-
-  // If -1, fetch latest.
-  int32 index = 2;
-
-  oneof result {
-    Empty empty = 13;
-    StreamEntry value = 14;
-    Failure failure = 15;
-  };
-
-  // Entry name
-  string name = 12;
-}
-
-// Completable: Yes
-// Fallible: No
-// Type: 0x0800 + 6
-message NextStreamEntryMessage {
-  string key = 1;
-
-  // If -1, fetch latest.
-  int32 index = 2;
-
-  oneof result {
-    StreamEntry value = 14;
-    Failure failure = 15;
-  };
-
-  // Entry name
-  string name = 12;
-}
-
-// Completable: No
-// Fallible: No
-// Type: 0x0800 + 7
-message AppendStreamEntryMessage {
-  string key = 1;
-  bytes value = 2;
-
-  // Entry name
-  string name = 12;
-}
-
-// Completable: Yes
-// Fallible: No
 // Type: 0x0800 + 8
 message GetPromiseEntryMessage {
   string key = 1;
@@ -426,11 +378,6 @@ message Failure {
 message Header {
   string key = 1;
   string value = 2;
-}
-
-message StreamEntry {
-  uint32 index = 1;
-  bytes value = 2;
 }
 
 message Empty {
