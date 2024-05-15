@@ -342,6 +342,9 @@ descriptions in [`protocol.proto`](dev/restate/service/protocol.proto).
 | `ClearStateEntryMessage`        | `0x0801` | No          | No       | Clear the value of a service instance state key.                                                                                                                 |
 | `ClearAllStateEntryMessage`     | `0x0802` | No          | No       | Clear all the values of the service instance state.                                                                                                              |
 | `RunEntryMessage`               | `0x0C05` | No          | No       | Run non-deterministic user provided code and persist the result.                                                                                                 |
+| `GetPromiseEntryMessage`        | `0x0808` | Yes         | No       | Get or wait the value of the given promise. If the value is not present yet, this entry will block waiting for the value.                                        |
+| `PeekPromiseEntryMessage`       | `0x0809` | Yes         | No       | Get the value of the given promise. If the value is not present, this entry completes immediately with empty completion.                                         |
+| `CompletePromiseEntryMessage`   | `0x080A` | Yes         | No       | Complete the given promise. If the promise was completed already, this entry completes with a failure.                                                           |
 
 #### Awakeable identifier
 
