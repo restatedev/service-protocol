@@ -19,7 +19,8 @@ enum ServiceProtocolVersion {
   SERVICE_PROTOCOL_VERSION_UNSPECIFIED = 0;
   // initial service protocol version
   V1 = 1;
-  // Added ErrorMessage.next_retry_at, StartMessage.retry_count_since_last_stored_entry and StartMessage.duration_since_last_stored_entry
+  // Added
+  // * Entry retry mechanism: ErrorMessage.next_retry_interval, StartMessage.retry_count_since_last_stored_entry and StartMessage.duration_since_last_stored_entry
   V2 = 2;
 }
 
