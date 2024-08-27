@@ -20,7 +20,7 @@ enum ServiceProtocolVersion {
   // initial service protocol version
   V1 = 1;
   // Added
-  // * Entry retry mechanism: ErrorMessage.next_retry_interval, StartMessage.retry_count_since_last_stored_entry and StartMessage.duration_since_last_stored_entry
+  // * Entry retry mechanism: ErrorMessage.next_retry_delay, StartMessage.retry_count_since_last_stored_entry and StartMessage.duration_since_last_stored_entry
   V2 = 2;
 }
 
@@ -106,9 +106,9 @@ message ErrorMessage {
   // Entry type.
   optional uint32 related_entry_type = 6;
 
-  // Interval before executing the next retry, specified as duration in milliseconds.
+  // Delay before executing the next retry, specified as duration in milliseconds.
   // If provided, it will override the default retry policy used by Restate's invoker ONLY for the next retry attempt.
-  optional uint64 next_retry_interval = 8;
+  optional uint64 next_retry_delay = 8;
 }
 
 // Type: 0x0000 + 4
