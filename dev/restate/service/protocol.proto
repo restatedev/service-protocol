@@ -26,6 +26,8 @@ enum ServiceProtocolVersion {
   // * New entry to cancel invocations: CancelInvocationEntryMessage
   // * New entry to retrieve the invocation id: GetCallInvocationIdEntryMessage
   // * New field to set idempotency key for Call entries
+  // * New entry to attach to existing invocation: AttachInvocationEntryMessage
+  // * New entry to get output of existing invocation: GetInvocationOutputEntryMessage
   V3 = 3;
 }
 
