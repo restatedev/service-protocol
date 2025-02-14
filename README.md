@@ -1,13 +1,3 @@
 # Restate Service Protocol
 
-This repo contains specification documents and Protobuf schemas of the Restate Service Protocol.
-
-* [Service invocation protocol specification](./service-invocation-protocol.md)
-
-## Development
-
-To format the spec document:
-
-```shell
-npx prettier -w service-invocation-protocol.md
-```
+ARCHIVED: all the content about the restate service protocol was moved in https://github.com/restatedev/restate/tree/main/service-protocol
